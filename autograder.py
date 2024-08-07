@@ -1,5 +1,6 @@
 #from bnetbase import *
 from naive_bayes_solution import *
+from time import time
 
 
 test_multiply = True
@@ -125,10 +126,23 @@ def test_nb_fun():
     print("passed.") 
 
 if __name__ == '__main__':
+    start = time()
     if test_multiply: test_multiply_fun()
+    # print("Time taken for multiply test: ", time() - start)
+    start = time()
     if test_sum: test_sum_fun()
+    # print("Time taken for sum out test: ", time() - start)
+    start = time()
     if test_restrict: test_restrict_fun()
+    # print("Time taken for restrict test: ", time() - start)
+    start = time()
     if test_normalize: test_normalize_fun()
+    # print("Time taken for normalize test: ", time() - start)
+    start = time()
     if test_ve: test_ve_fun()
+    # print("Time taken for VE test: ", time() - start)
+    start = time()
     if test_nb: test_nb_fun()
+    # print("Time taken for Naive Bayes test: ", time() - start)
+    print("All tests completed.")
 
