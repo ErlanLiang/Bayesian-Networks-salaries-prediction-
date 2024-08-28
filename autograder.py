@@ -132,7 +132,7 @@ if __name__ == '__main__':
     start = time()
     if test_sum: test_sum_fun()
     # print("Time taken for sum out test: ", time() - start)
-    start = time()
+    # start = time()
     if test_restrict: test_restrict_fun()
     # print("Time taken for restrict test: ", time() - start)
     start = time()

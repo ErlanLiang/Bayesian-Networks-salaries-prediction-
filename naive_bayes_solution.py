@@ -63,11 +63,15 @@ def sum_out(factor: Factor, variable: Variable):
     dic = {}
     for assignment in itertools.product(*[v.domain() for v in factor.get_scope()]):
         # remove the input variable from the assignment
+        # print("=====================================")
+        # print("dic:", dic)
+        # print("assignment: ", assignment)
         new_assignment = [v for v in assignment if v not in variable.domain()]   
+        # print("new_assignment: ", new_assignment)
         if tuple(new_assignment) not in dic:
             dic[tuple(new_assignment)] = [len(variable.domain()) - 1, factor.get_value(assignment)]
 
-        if dic[tuple(new_assignment)][0] > 1:
+        elif dic[tuple(new_assignment)][0] > 1:
             dic[tuple(new_assignment)][0] -= 1
             dic[tuple(new_assignment)][1] += factor.get_value(assignment)
         else:
@@ -497,18 +501,39 @@ def explore(bayes_net: BN, question: int) -> float:
 
 
 if __name__ == '__main__':
-    start = time()
-    nb = naive_bayes_model('data/adult-train.csv')
-    # print("time model build: ", time() - start)
-    # print("explore(nb,{}) = {}".format(1, explore(nb, 1)))
-    for i in range(1,7):
-        print("=====================================")
-        print("explore(nb,{}) = {}".format(i, explore(nb, i)))
-    # nb.get_variable("Work").set_evidence("Private")
-    # nb.get_variable("Occupation").set_evidence("Professional")
-    # nb.get_variable("Education").set_evidence("Bachelors")
-    # nb.get_variable("Relationship").set_evidence("Not-in-family")
-    # nb.get_variable("Gender").set_evidence("Male")
-    # factor = ve(nb, nb.get_variable("Salary"), [nb.get_variable("Work"), nb.get_variable("Occupation"), nb.get_variable("Education"), nb.get_variable("Relationship"), nb.get_variable("Gender")])
-    # factor.recursive_print_values(factor.get_scope())
-    # print("time: ", time() - start)
+    # start = time()
+    # nb = naive_bayes_model('data/adult-train.csv')
+    # # print("time model build: ", time() - start)
+    # # print("explore(nb,{}) = {}".format(1, explore(nb, 1)))
+    # for i in range(1,7):
+    #     print("=====================================")
+    #     print("explore(nb,{}) = {}".format(i, explore(nb, i)))
+    # # nb.get_variable("Work").set_evidence("Private")
+    # # nb.get_variable("Occupation").set_evidence("Professional")
+    # # nb.get_variable("Education").set_evidence("Bachelors")
+    # # nb.get_variable("Relationship").set_evidence("Not-in-family")
+    # # nb.get_variable("Gender").set_evidence("Male")
+    # # factor = ve(nb, nb.get_variable("Salary"), [nb.get_variable("Work"), nb.get_variable("Occupation"), nb.get_variable("Education"), nb.get_variable("Relationship"), nb.get_variable("Gender")])
+    # # factor.recursive_print_values(factor.get_scope())
+    # # print("time: ", time() - start)
+
+
+    #  E,B,S,W,G example
+    E, B, S, G, W = Variable('E', ['e', '-e']), Variable('B', ['b', '-b']), Variable('S', ['s', '-s']), Variable('G', ['g', '-g']), Variable('W', ['w', '-w'])
+    FE, FB, FS, FG, FW = Factor('P(E)', [E]), Factor('P(B)', [B]), Factor('P(S|E,B)', [S, E, B]), Factor('P(G|S)', [G,S]), Factor('P(W|S)', [W,S])
+
+
+    FE.add_values([['e',0.1], ['-e', 0.9]])
+    FB.add_values([['b', 0.1], ['-b', 0.9]])
+    FS.add_values([['s', 'e', 'b', .9], ['s', 'e', '-b', .2], ['s', '-e', 'b', .8],['s', '-e', '-b', 0],
+                    ['-s', 'e', 'b', .1], ['-s', 'e', '-b', .8], ['-s', '-e', 'b', .2],['-s', '-e', '-b', 1]])
+    FG.add_values([['g', 's', 0.5], ['g', '-s', 0], ['-g', 's', 0.5], ['-g', '-s', 1]])
+    FW.add_values([['w', 's', 0.8], ['w', '-s', .2], ['-w', 's', 0.2], ['-w', '-s', 0.8]])
+
+    # try restrict FS with S = s
+    print("restrict FS with S = s")
+    new_factor = restrict(FS, S, '-b')
+    new_factor.recursive_print_values(new_factor.get_scope())
+    for scope in new_factor.get_scope():
+        print("scope: ", scope.name)
+        print("domain: ", scope.domain())   
